@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-
     [Header("Public-Varibles")]
     public CharacterController myController;
     public bool rotMov;
@@ -39,5 +38,10 @@ public class PlayerController : MonoBehaviour
 
             myController.Move(myDirection * Time.deltaTime);
         }
+    }
+
+    private void SetForce(PlayerController myPlayer)
+    {
+        
     }
 }
