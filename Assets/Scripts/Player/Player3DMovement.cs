@@ -1,8 +1,8 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerMovement : MonoBehaviour
+public class Player3DMovement : MonoBehaviour
 {
     [Header("Movement")]
     [SerializeField] private float mySpeed;
@@ -10,20 +10,24 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float jumpForce;
     [SerializeField] private float jumpCooldown;
     [SerializeField] private float airMultiplier;
+    private Vector3 myDirection;
     private bool readyToJump;
+
+    // Camera control using mouse
+    private float horizontalInput;
+    private float verticalInput;
+    private float mouseSensitivity = 100f;
+    private float xRotation = 0f;
+    public Transform cameraTransform;
 
     [HideInInspector] public float walkSpeed;
     [HideInInspector] public float sprintSpeed;
 
     [Header("Ground Check")]
-    [SerializeField]private float playerHeight;
+    [SerializeField] private float playerHeight;
     [SerializeField] private LayerMask isGround;
     private bool grounded;
 
-    private float horizontalInput;
-    private float verticalInput;
-
-    private Vector3 myDirection;
     private Rigidbody myRigidbody;
     public Transform orientation;
 
@@ -53,10 +57,12 @@ public class PlayerMovement : MonoBehaviour
     private void FixedUpdate()
     {
         PlayerMovementControl();
+        CameraControl();
     }
 
     private void MovementInputControl()
     {
+        // Get input from W,A,S,D keys
         horizontalInput = Input.GetAxisRaw("Horizontal");
         verticalInput = Input.GetAxisRaw("Vertical");
 
@@ -103,5 +109,31 @@ public class PlayerMovement : MonoBehaviour
     private void ResetJump()
     {
         readyToJump = true;
+    }
+
+    private void CameraControl()
+    {
+        if (Input.GetKey(KeyCode.W) && grounded)
+        {
+            // calculate target position to move the camera towards
+            Vector3 targetPosition = transform.position + (orientation.forward * 3f);
+
+            // lerp the camera position towards the target position
+            transform.position = Vector3.Lerp(transform.position, targetPosition, Time.deltaTime * 10f);
+        }
+        else
+        {
+            // calculate camera rotation based on mouse input
+            float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
+            float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;
+
+            // limit vertical rotation to avoid over-rotation
+            xRotation -= mouseY;
+            xRotation = Mathf.Clamp(xRotation, -90f, 90f);
+
+            // apply camera rotation
+            orientation.Rotate(Vector3.up * mouseX);
+            cameraTransform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
+        }
     }
 }
