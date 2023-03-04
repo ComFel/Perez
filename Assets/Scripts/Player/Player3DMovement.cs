@@ -57,7 +57,7 @@ public class Player3DMovement : MonoBehaviour
     private void FixedUpdate()
     {
         PlayerMovementControl();
-        CameraControl();
+        //CameraControl();
     }
 
     private void MovementInputControl()
